@@ -19,6 +19,22 @@ global class Phone {
         this.extension = extension;
 	}
 
+    global String format() {
+        String formatted = null;
+
+        if (this.isValid()) {
+            PhoneService ps = PhoneService.getInstance(this.countryCode);
+            formatted = ps.format(subscriberNumber, extension);
+        }
+        else {
+            formatted = (this.countryCode == null ? '' : ('+' + this.countryCode))
+                    + (this.subscriberNumber == null ? '' : this.subscriberNumber)
+                    + (this.extension == null ? '' : this.extension);
+        }
+
+        return formatted;
+    }
+
     global String getCountryCode() {
         return this.countryCode;
     }

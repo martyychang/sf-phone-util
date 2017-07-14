@@ -3,6 +3,7 @@
     <types>
         <members>Phone</members>
         <members>PhoneService</members>
+        <members>PhoneServiceTest</members>
         <members>PhoneTest</members>
         <members>PhoneUtil</members>
         <name>ApexClass</name>

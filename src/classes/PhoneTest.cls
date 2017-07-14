@@ -8,10 +8,14 @@ private class PhoneTest {
         insert new List<PhoneCountryCode__c> {
             new PhoneCountryCode__c(Name = '1',
                     MinSubscriberNumberLength__c = 10,
-                    MaxSubscriberNumberLength__c = 10),
+                    MaxSubscriberNumberLength__c = 10,
+                    SubscriberNumberRegex__c = '(\\d{3})(\\d{3})(\\d{4})',
+                    SubscriberNumberFormat__c = '(\\1)\\2-\\3'),
             new PhoneCountryCode__c(Name = '886',
                     MinSubscriberNumberLength__c = 9,
-                    MaxSubscriberNumberLength__c = 9)
+                    MaxSubscriberNumberLength__c = 9,
+                    SubscriberNumberRegex__c = '(\\d{1})(\\d{4})(\\d{4})',
+                    SubscriberNumberFormat__c = '(\\1)\\2-\\3')
         };
 
         // Create Phone Setting records
@@ -24,7 +28,89 @@ private class PhoneTest {
      * The following results are expected from various numbers. This assumes
      * the default country code is 1.
      *
-     * Given                | Valid?
+     * The following subscriber formatting considerations exist.
+     *
+     * cc  | Subscriber Number Regex    | Subscriber Number Format
+     * --- | -------------------------- | ------------------------
+     * 1   | (\\d{3})(\\d{3})(\\d{4})   | (\\1)\\2-\\3
+     * 886 | (\\d{1})(\\2{4}){\\d{4})   | \\1-\\2-\\3
+     *
+     * Given                | Then
+     * -------------------- | ------------------
+     * 1-800-NO-SOFTWARE    | +1(800)667-6389
+     * +1 (617) 316-5400    | +1(617)316-5400
+     * +1(617)316-5400      | +1(617)316-5400
+     * 1 (617) 316-5400     | +1(617)316-5400
+     * 1(617)316-5400       | +1(617)316-5400
+     * 1-617-316-5400       | +1(617)316-5400
+     * 16173165400          | +1(617)316-5400
+     * (617) 316-5400       | +1(617)316-5400
+     * (617) 316-540        | +1617316540
+     * (617)316-5400        | +1(617)316-5400
+     * 617-316-5400         | +1(617)316-5400
+     * 6173165400           | +1(617)316-5400
+     * +1 (617) 727-2200 x2 | +1(617)727-2200 x2
+     * 1 (617) 727-2200 x2  | +1(617)727-2200 x2
+     * (617) 727-2200 x2    | +1(617)727-2200 x2
+     * (617) 727-2200 ext 2 | +1(617)727-2200 x2
+     * 617-727-2200 ext. 2  | +1(617)727-2200 x2
+     * 6177272200x2         | +1(617)727-2200 x2
+     * +886-2-2321-4311     | +886-2-2321-4311
+     * null                 | null
+     */
+    @isTest
+    private static void format() {
+
+        // Given
+        System.assertEquals('1', PhoneService.getInstance().getCountryCode(),
+                'PhoneService.getInstance().getCountryCode()');
+
+        Map<String, String> expectedMap = new Map<String, String> {
+            // TODO: null
+            // TODO: '1-800-NO-SOFTWARE'
+            '+1 (617) 316-5400' => '+1(617)316-5400',
+            '+1(617)316-5400' => '+1(617)316-5400',
+            '1 (617) 316-5400' => '+1(617)316-5400',
+            '1(617)316-5400' => '+1(617)316-5400',
+            '1-617-316-5400' => '+1(617)316-5400',
+            '1617316-5400' => '+1(617)316-5400',
+            '(617) 316-5400' => '+1(617)316-5400',
+            '(617) 316-540' => '+1617316540',
+            '(617)316-5400' => '+1(617)316-5400',
+            '617-316-5400' => '+1(617)316-5400',
+            '6173165400' => '+1(617)316-5400',
+            '+1 (617) 727-2200 x2' => '+1(617)727-2200 x2',
+            '1 (617) 727-2200 x2' => '+1(617)727-2200 x2',
+            '(617) 727-2200 x2' => '+1(617)727-2200 x2',
+            '(617) 727-2200 ext 2' => '+1(617)727-2200 x2',
+            '617-727-2200 ext. 2' => '+1(617)727-2200 x2',
+            '6177272200x2' => '+1(617)727-2200 x2',
+            '+886-2-2321-4311' => '+886(2)2321-4311'
+        };
+
+        // When
+        Test.startTest();
+
+        Map<String, String> actualMap = new Map<String, String>();
+
+        for (String eachValue : expectedMap.keySet()) {
+            actualMap.put(eachValue, Phone.valueOf(eachValue).format());
+        }
+
+        // Then
+        Test.stopTest();
+
+        for (String eachValue : expectedMap.keySet()) {
+            System.assertEquals(
+                    expectedMap.get(eachValue), actualMap.get(eachValue), 'format');
+        }
+    }
+
+    /**
+     * The following results are expected from various numbers. This assumes
+     * the default country code is 1.
+     *
+     * Given                | Then
      * -------------------- | ------
      * 1-800-NO-SOFTWARE    | true
      * +1 (617) 316-5400    | true

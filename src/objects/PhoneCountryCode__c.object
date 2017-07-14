@@ -31,6 +31,32 @@
         <type>Number</type>
         <unique>false</unique>
     </fields>
+    <fields>
+        <fullName>SubscriberNumberFormat__c</fullName>
+        <defaultValue>&apos;(\\1)\\2-\\3&apos;</defaultValue>
+        <description>The counterpart to Subscriber Number Regex, used to format the groups captured from the regex. The value should be escaped for direct use within Apex.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The counterpart to Subscriber Number Regex, used to format the groups captured from the regex. The value should be escaped for direct use within Apex.</inlineHelpText>
+        <label>Subscriber Number Format</label>
+        <length>100</length>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>SubscriberNumberRegex__c</fullName>
+        <defaultValue>&apos;(\\d{3})(\\d{3})(\\d{4})&apos;</defaultValue>
+        <description>The regex used to break down the subscriber number into parts for formatting purposes. Should be escaped correctly for direct use in Apex.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>The regex used to break down the subscriber number into parts for formatting purposes. Should be escaped correctly for direct use in Apex.</inlineHelpText>
+        <label>Subscriber Number Regex</label>
+        <length>100</length>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
     <label>Phone Country Code</label>
     <visibility>Public</visibility>
 </CustomObject>
