@@ -50,15 +50,8 @@ global class Phone {
 
         // Don't bother checking if we don't have a global subscriber number
         if (this.hasCountryCode() && this.hasSubscriberNumber()) {
-
-            // Check country code 1 (e.g., United States, Canada)
-            if (countryCode == PhoneUtil.UNITED_STATES_COUNTRY_CODE) {
-                valid = subscriberNumber.length() ==
-                        PhoneUtil.UNITED_STATES_SUBSCRIBER_NUMBER_LENGTH;
-            }
-            else {
-                valid = true;  // Assume valid since it's not empty
-            }
+            PhoneService ps = PhoneService.getInstance(this.getCountryCode());
+            valid = ps.validateSubscriberNumber(this.getSubscriberNumber());
         }
 
         // Return validity
@@ -66,6 +59,43 @@ global class Phone {
     }
 
     global static Phone valueOf(String value) {
-        return new Phone('x', 'x', 'x');
+        
+        // TODO: Handle international call prefixes
+
+        // Handle the country code by looking for known country codes
+        // at the beginning of the number
+        String countryCodeRegex = PhoneUtil.getCountryCodeRegex();
+        
+        Matcher countryCodeMatcher =
+                Pattern.compile(countryCodeRegex).matcher(value);
+
+        String countryCode = countryCodeMatcher.find()
+                ? countryCodeMatcher.group(1)
+                : PhoneSetting__c.getInstance().DefaultCountryCode__c;
+
+        // Handle the subscriber number and the possible extension
+        String subscriberNumber = null;
+        String extension = null;
+
+        // Remove the country code and
+        // strip all remaining non-digit characters
+        value = value.replaceAll(countryCodeRegex, '');
+        value = value.replaceAll('[^\\d]', '');
+
+        // If the remaining string has more characters than the
+        // max length, assume the extra is the extension.
+        PhoneService ps = PhoneService.getInstance(countryCode);
+
+        if (value.length() > ps.getMaxSubscriberNumberLength()) {
+            subscriberNumber = value.left(ps.getMaxSubscriberNumberLength());
+            extension = value.right(
+                    value.length() - ps.getMaxSubscriberNumberLength());
+        }
+        else {
+            subscriberNumber = value;
+        }
+
+        // Return the phone!
+        return new Phone(countryCode, subscriberNumber, extension);
     }
 }

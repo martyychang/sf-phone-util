@@ -7,8 +7,11 @@ private class PhoneTest {
         // Create Phone Country Code records
         insert new List<PhoneCountryCode__c> {
             new PhoneCountryCode__c(Name = '1',
-                    MaxSubscriberNumberLength__c = 10,
-                    MinSubscriberNumberLength__c = 10)
+                    MinSubscriberNumberLength__c = 10,
+                    MaxSubscriberNumberLength__c = 10),
+            new PhoneCountryCode__c(Name = '886',
+                    MinSubscriberNumberLength__c = 9,
+                    MaxSubscriberNumberLength__c = 9)
         };
 
         // Create Phone Setting records
@@ -52,7 +55,8 @@ private class PhoneTest {
                 'PhoneService.getInstance().getCountryCode()');
 
         Map<String, Phone> expectedMap = new Map<String, Phone> {
-            // TODO: '1-800-NO-SOFTWARE'
+            // TODO: null => new Phone(null, null, null)
+            // TODO: '1-800-NO-SOFTWARE' => new Phone('1', '8006676389')
             '+1 (617) 316-5400' => new Phone('1', '6173165400'),
             '+1(617)316-5400' => new Phone('1', '6173165400'),
             '1 (617) 316-5400' => new Phone('1', '6173165400'),
@@ -70,8 +74,7 @@ private class PhoneTest {
             '(617) 727-2200 ext 2' => new Phone('1', '6177272200', '2'),
             '617-727-2200 ext. 2' => new Phone('1', '6177272200', '2'),
             '6177272200x2' => new Phone('1', '6177272200', '2'),
-            '+886-2-2321-4311' => new Phone('886', '223214311'),
-            null => new Phone(null, null, null)
+            '+886-2-2321-4311' => new Phone('886', '223214311')
         };
 
         // When

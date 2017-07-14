@@ -1,4 +1,17 @@
 global class PhoneUtil {
-    global static final String UNITED_STATES_COUNTRY_CODE = '1';
-    global static final Integer UNITED_STATES_SUBSCRIBER_NUMBER_LENGTH = 10;
+
+    /**
+     * @return a really long regex based on all of the known country codes
+     */
+    global static String getCountryCodeRegex() {
+
+        // Compile a list of the country codes
+        List<String> countryCodes = new List<String>();
+
+        for (PhoneCountryCode__c eachEntry : PhoneCountryCode__c.getAll().values()) {
+            countryCodes.add(eachEntry.Name);
+        }
+
+        return '^\\+*(' + String.join(countryCodes, '|') + ')';
+    }
 }
