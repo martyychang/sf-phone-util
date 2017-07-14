@@ -24,6 +24,81 @@ private class PhoneTest {
      * The following results are expected from various numbers. This assumes
      * the default country code is 1.
      *
+     * Given                | Valid?
+     * -------------------- | ------
+     * 1-800-NO-SOFTWARE    | true
+     * +1 (617) 316-5400    | true
+     * +1(617)316-5400      | true
+     * 1 (617) 316-5400     | true
+     * 1(617)316-5400       | true
+     * 1-617-316-5400       | true
+     * 16173165400          | true
+     * (617) 316-5400       | true
+     * (617) 316-540        | false
+     * (617)316-5400        | true
+     * 617-316-5400         | true
+     * 6173165400           | true
+     * +1 (617) 727-2200 x2 | true
+     * 1 (617) 727-2200 x2  | true
+     * (617) 727-2200 x2    | true
+     * (617) 727-2200 ext 2 | true
+     * 617-727-2200 ext. 2  | true
+     * 6177272200x2         | true
+     * +886-2-2321-4311     | true
+     * null                 | false
+     */
+    @isTest
+    private static void isValid() {
+
+        // Given
+        System.assertEquals('1', PhoneService.getInstance().getCountryCode(),
+                'PhoneService.getInstance().getCountryCode()');
+
+        Map<String, Boolean> expectedMap = new Map<String, Boolean> {
+            // TODO: null => false
+            // TODO: '1-800-NO-SOFTWARE' => true
+            '+1 (617) 316-5400' => true,
+            '+1(617)316-5400' => true,
+            '1 (617) 316-5400' => true,
+            '1(617)316-5400' => true,
+            '1-617-316-5400' => true,
+            '1617316-5400' => true,
+            '(617) 316-5400' => true,
+            '(617) 316-540' => false,
+            '(617)316-5400' => true,
+            '617-316-5400' => true,
+            '6173165400' => true,
+            '+1 (617) 727-2200 x2' => true,
+            '1 (617) 727-2200 x2' => true,
+            '(617) 727-2200 x2' => true,
+            '(617) 727-2200 ext 2' => true,
+            '617-727-2200 ext. 2' => true,
+            '6177272200x2' => true,
+            '+886-2-2321-4311' => true
+        };
+
+        // When
+        Test.startTest();
+
+        Map<String, Boolean> actualMap = new Map<String, Boolean>();
+
+        for (String eachValue : expectedMap.keySet()) {
+            actualMap.put(eachValue, Phone.valueOf(eachValue).isValid());
+        }
+
+        // Then
+        Test.stopTest();
+
+        for (String eachValue : expectedMap.keySet()) {
+            System.assertEquals(
+                    expectedMap.get(eachValue), actualMap.get(eachValue), 'valid');
+        }
+    }
+
+    /**
+     * The following results are expected from various numbers. This assumes
+     * the default country code is 1.
+     *
      * Given                | cc   | Subscriber Number | Extension
      * -------------------- | ---- | ----------------- | ---------
      * 1-800-NO-SOFTWARE    | 1    | 8006676389        | null
