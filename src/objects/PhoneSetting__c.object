@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>Default options for using Phone-related utilities</description>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>DefaultCountryCode__c</fullName>
+        <defaultValue>&apos;1&apos;</defaultValue>
+        <description>Default country code to use in cases where an explicit country code is not available</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Default country code to use in cases where an explicit country code is not available</inlineHelpText>
+        <label>Default Country Code</label>
+        <length>3</length>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Phone Setting</label>
+    <visibility>Public</visibility>
+</CustomObject>
